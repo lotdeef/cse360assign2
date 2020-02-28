@@ -2,10 +2,14 @@
  * @author London Fischer
  * Class ID: 379
  * Assignment #1
+ * Version: 2.0
  * 
  * This Class creates an integer list holding up to 10 integers.
  * It contains private variables int[10] list and int count.
  * The available public methods are: add, remove, count, toString, and search
+ * 
+ * Version 2.0 adds methods append, first, and size. It also implements dynamic
+ * resizing of the list upon addition and removal of elements.
  */
 package assign2;
 
@@ -23,17 +27,27 @@ public class SimpleList {
 	}
 	
 	/**
-	 * Add a number to the bottom of the list
+	 * Add a number to the beginning of the list
+	 * Extends list by 50% if there is not enough room
 	 * @param numToAdd Number to add
 	 */
 	public void add(int numToAdd) {
-		for(int i = 9; i > 0; i--) {
+		//If list is full, extend by 50% to make room
+		if(count == list.length) {
+			int[] newList = new int[(count/2)*3];
+			for( int i = 0; i < count; i++) {
+				newList[i] = list[i];
+			}
+			//set list to newList and reclaim memory
+			list = newList;
+			newList = null;
+		}
+		//move elements toward end of the list
+		for(int i = list.length-1; i > 0; i--) {
 			list[i] = list[i-1];
 		}
 		list[0] = numToAdd;
-		if(count < 10) {
-			count++;
-		}
+		count++;
 	}
 	
 	/**
@@ -46,11 +60,26 @@ public class SimpleList {
 			for(int i = location; i < count-1; i++) {
 				list[i] = list[i+1];
 			}
-			if(count == 10) {
-				list[9] = 0;
+			if(count == list.length) {
+				list[list.length-1] = 0;
+			}
+			//determine how much room is left in list
+			int emptySpaces = 0;
+			for(int i = 0; i < list.length; i++) {
+				if(list[i] == 0) emptySpaces++;
+			}
+			//decrease size if > 25% is left
+			if(emptySpaces > (list.length+1)/4) {
+				int[] newList = new int[(list.length*3)/4];
+				for(int i = 0; i < newList.length; i++) {
+					newList[i] = list[i];
+				}
+				list = newList;
+				newList = null;
 			}
 			count--;
 		}
+		
 	}
 	
 	/**
@@ -89,4 +118,45 @@ public class SimpleList {
 		}
 		return location;
 	}
+	
+	/**
+	 * Add a number to the end of the list
+	 * Extends list by 50% if there is not enough room
+	 * @param numToAdd Number to add
+	 */
+	public void append(int numToAdd) {
+		//If list is full, extend by 50% to make room
+		if(count == list.length) {
+			int[] newList = new int[(count/2)*3];
+			for( int i = 0; i < count; i++) {
+				newList[i] = list[i];
+			}
+			//set list to newList and reclaim memory
+			list = newList;
+			newList = null;
+		}
+		list[count] = numToAdd;
+		count++;
+	}
+	
+	/**
+	 * Returns the first number of the list
+	 * @return Number at first index or -1 if not found
+	 */
+	public int first() {
+		int ret = -1;
+		if(count != 0) {
+			ret = list[0];
+		}
+		return ret;
+	}
+	
+	/**
+	 * Returns the current possible size of the list
+	 * @return Max size of list
+	 */
+	public int size() {
+		return list.length;
+	}
 }
+
